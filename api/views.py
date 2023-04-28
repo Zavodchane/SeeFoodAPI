@@ -2,9 +2,12 @@ from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
-from .classifier import get_dish
+from .classifier import classify
 from .models import Dish
+
+from pathlib import Path
 import json
+import time
 import os
 
 
@@ -12,19 +15,13 @@ import os
 def api(request):
     if request.method == 'POST' and request.FILES:
         try:
-            file = request.FILES['photo']
-            fs = FileSystemStorage()
-            filename = fs.save(file.name, file)
-            file_url = fs.url(filename)
-
-            name_dish = get_dish(file_url)
-            os.remove(f'.{file_url}')
+            image = request.FILES['photo']
+            name_dish = classify(image)
             recipe_dish = Dish.objects.get(name_dish=name_dish).recept_dish
             data = json.dumps({'name_dish': name_dish, 'recipe_dish': recipe_dish})
-
             return HttpResponse(data)
-        except:
-            return HttpResponse(json.dumps({'Error': 'Example request.POST: {"photo": file}'}))
+        except Exception as ex:
+            return HttpResponse(json.dumps({'Error': f'{ex}'}))
 
     if request.method == 'GET':
         data = json.dumps({'name_dish': None, 'recipe_dish': None}, indent=2)
