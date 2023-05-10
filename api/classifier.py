@@ -16,7 +16,6 @@ def classify(image_file):
 
     with torch.no_grad():
         output = seefood(tensor)
-        print(output)
     _, predicted = torch.max(output, 1)
 
     labels = {0: 'borsch', 1: 'four cheeses', 2: 'khinkali', 3: 'pancake', 4: 'pelmeni', 5: 'pepperoni', 6: 'shawarma',
@@ -25,5 +24,3 @@ def classify(image_file):
     for key in labels.keys():
         if predicted == key:
             return labels[key]
-
-# print(classify('img.jpg'))
