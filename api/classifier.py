@@ -11,7 +11,6 @@ def classify(image_file):
 
     transform = transforms.ToTensor()
     tensor = transform(image)
-    tensor = tensor
     tensor = tensor.unsqueeze(dim=0)
 
     with torch.no_grad():
@@ -21,6 +20,4 @@ def classify(image_file):
     labels = {0: 'borsch', 1: 'four cheeses', 2: 'khinkali', 3: 'pancake', 4: 'pelmeni', 5: 'pepperoni', 6: 'shawarma',
               7: 'shchi'}
 
-    for key in labels.keys():
-        if predicted == key:
-            return labels[key]
+    return labels[predicted.detach().numpy()[0]]
